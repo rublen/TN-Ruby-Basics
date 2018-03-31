@@ -14,7 +14,6 @@ end
 p fibo
 
 puts "\n--- Task 4 ---"
-alphabet = ('a'..'z').to_a
 eng_vowels = {}
 ('a'..'z').each_with_index do |char, ind|
   eng_vowels[char] = ind + 1 if ['a', 'e', 'i', 'o', 'u', 'y'].include?(char)
