@@ -8,7 +8,7 @@ loop do
   price = gets.to_f
   print 'Amount: '
   amount = gets.to_f
-  invoice[product] = { price => amount }
+  invoice[product] = { price: price, amount: amount }
 end
 
 puts invoice
@@ -18,7 +18,7 @@ total = 0
 prod_total = 0
 
 invoice.each do |prod, money|
-  money.each { |k, v| prod_total = k * v }
+  prod_total = money[:price] * money[:amount]
   puts "#{prod}: #{prod_total}"
   total += prod_total
 end

@@ -15,10 +15,8 @@ p fibo
 
 puts "\n--- Task 4 ---"
 alphabet = ('a'..'z').to_a
-eng_vowels = { 'a' => alphabet.index('a') + 1,
-               'e' => alphabet.index('e') + 1,
-               'i' => alphabet.index('i') + 1,
-               'o' => alphabet.index('o') + 1,
-               'u' => alphabet.index('u') + 1,
-               'y' => alphabet.index('y') + 1 }
+eng_vowels = {}
+('a'..'z').each_with_index do |char, ind|
+  eng_vowels[char] = ind + 1 if ['a', 'e', 'i', 'o', 'u', 'y'].include?(char)
+end
 puts eng_vowels
