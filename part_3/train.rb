@@ -1,10 +1,10 @@
 require './route'
 
 class Train
-  attr_accessor :current_speed, :current_station, :route
-  attr_reader :number, :carriages
+  attr_accessor :current_speed, :current_station
+  attr_reader :number, :carriages, :type, :route
 
-  # type: enter '0' for freight train and '1' (or any other value), for passanger train
+  # type of train: '0' is for freight train and '1' (or any other value) is for passanger train
   def initialize(number, carriages, type = 0)
     @number = number.to_s
     @type = type == 0 ? "freight" : "passenger"
@@ -21,11 +21,11 @@ class Train
   end
 
   def add_one_carriage
-    current_speed.zero? ? @carriages += 1 : (puts "Stop the train to add a carriage")
+    current_speed.zero? ? @carriages += 1 : (puts "Stop the train before adding a carriage")
   end
 
   def remove_one_carriage
-    current_speed.zero? ? @carriages -= 1 : (puts "Stop the train to remove a carriage")
+    current_speed.zero? ? @carriages -= 1 : (puts "Stop the train before removing a carriage")
   end
 
   def set_route(route)
@@ -49,9 +49,3 @@ class Train
     self.current_station = previous_station
   end
 end
-# -----
-t1 = Train.new(1478, 12)
-r1 = Route.new(Station.new('q'), Station.new('w'))
-t1.set_route(r1)
-p t1
-

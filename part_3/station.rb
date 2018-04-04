@@ -1,4 +1,4 @@
-# require './train'
+require './train'
 
 class Station
   attr_reader :trains, :name
@@ -9,10 +9,10 @@ class Station
   end
 
   def trains_on_the_station
-    trains.map { |train| train.number }
+    get_numbers trains
   end
 
-  def take (train)
+  def take(train)
     @trains << train
   end
 
@@ -22,7 +22,11 @@ class Station
 
   # freight or passanger
   def trains_by_type(type)
-    trains.select { |train| train.type = type }
+    get_numbers trains.select { |train| train.type == type }
+  end
+
+  private
+  def get_numbers (list_of_trains)
+    list_of_trains.map { |train| train.number }
   end
 end
-# p Station.new('A').trains
