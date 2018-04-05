@@ -12,8 +12,12 @@ class Train
     @current_speed = 0
   end
 
-  def accelerate_to(speed)
-    self.current_speed = speed
+  def speed_up_by(speed)
+    self.current_speed += speed
+  end
+
+  def speed_down_by(speed)
+    self.current_speed -= speed
   end
 
   def stop
