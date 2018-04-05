@@ -1,38 +1,31 @@
 class Route
-  attr_reader :stations_list, :start_station, :end_station
+  attr_reader :stations, :start_station, :end_station
 
   def initialize(start_station, end_station)
-    @start_station = start_station
-    @end_station = end_station
-    @stations_list = [@start_station, @end_station]
+    @stations = [start_station, end_station]
   end
 
   def display_route
-    stations_list.each { |station| puts station }
+    stations.each { |station| puts station }
   end
 
-  def add_station_before (station, before_station)
-    @stations_list.insert(index(before_station), station)
+  def add_station(station)
+    @stations.insert(-2, station)
   end
 
   def delete_station(station)
-    return "You can't delete end stations" if [@start_station, @end_station].include? station
-    @stations_list.delete(station)
-    stations_list
+    return puts "You can't delete end stations" if [stations[0], stations[-1]].include? station
+    @stations.delete(station)
+    stations
   end
 
   def next_station(station)
-    return "#{station} is the last station of the route" if station == end_station
-    stations_list[index(station) + 1]
+    return puts "#{station} is the last station of the route" if station == end_station
+    stations[stations.index(station) + 1]
   end
 
   def previous_station(station)
     return "#{station} is the first station of the route" if station == start_station
-    stations_list[index(station) - 1]
-  end
-
-  private
-  def index(station)
-    stations_list.index(station)
+    stations[stations.index(station) - 1]
   end
 end
