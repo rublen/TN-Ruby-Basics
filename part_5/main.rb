@@ -1,5 +1,6 @@
 require_relative 'train'
 require_relative 'passtrain_cargotrain_carriages'
+require_relative 'route'
 require_relative 'station'
 require_relative 'optional_methods'
 require_relative 'rail_road'
@@ -29,7 +30,7 @@ loop do
     6 - create a route, two required attributes - start and end stations
     0 - exit to the previous menu\n"
     loop do
-      print "Enter a CREATING option: "
+      print "\nEnter a CREATING option: "
       option = gets.to_i
       p creating(option, rr)
       break if option.zero?
@@ -62,7 +63,7 @@ loop do
     end
 
     loop do
-      print "Enter a MANAGING option: "
+      print "\nEnter a MANAGING option: "
       option = gets.to_i
       p managing(option, train, route, rr)
       break if option.zero?
@@ -76,11 +77,13 @@ loop do
     0 - exit to the previous menu\n"
 
     loop do
-      print "Enter a INFO option: "
+      print "\nEnter a INFO option: "
       option = gets.to_i
       p info(option, rr)
       break if option.zero?
     end
+  else
+    exit
   end
 end
 

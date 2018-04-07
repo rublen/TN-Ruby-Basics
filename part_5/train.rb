@@ -1,5 +1,3 @@
-require './route'
-
 class Train
   attr_reader :number, :current_speed, :carriages, :route, :current_station
 
@@ -57,8 +55,9 @@ class Train
   end
 
   protected
-  # извне сеттер должен быть недоступен, изменять скорость - только через методы увеличения/снижения скорости
+  # извне эти сеттер не должны быть недоступны,
+  # изменять скорость - только через методы увеличения/снижения скорости,
+  # изменять станцию - через методы move_to_next/previous_station
   # дочерние классы должны иметь доступ к этим сеттерам
   attr_writer :current_speed, :current_station
-
 end

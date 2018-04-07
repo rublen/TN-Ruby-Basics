@@ -11,11 +11,11 @@ class Station
   end
 
   def take(train)
-    @trains << train
+    @trains << train until trains.include? train
   end
 
   def send_off(train)
-    @trains.delete(train)
+    @trains.delete(train) if trains.include? train
   end
 
   # cargo or passanger

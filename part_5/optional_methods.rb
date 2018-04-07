@@ -41,9 +41,9 @@ def managing(option, train, route, road)
   when 5
     train.remove_one_carriage
   when 6
-    train.move_to_next_station
+    train.move_to_next_station if train.route
   when 7
-    train.move_to_previous_station
+    train.move_to_previous_station if train.route
   end
 end
 
@@ -53,12 +53,12 @@ def info(option, road)
     print "Number of route in the list of routes (0, 1, 2, ...): "
     n = gets.to_i
     route = road.routes[n]
-    puts "There is no route ##{n}" unless route
-    route.display
+    route ? route.display : puts("There is no route ##{n}")
   when 2
     print 'Station: '
     st = gets.chomp
-    road.stations.find { |s| s.name == st }.trains_on_the_station
+    st = road.stations.find { |s| s.name == st }
+    st.trains_on_the_station if st
   when 3
     road.trains
   end
