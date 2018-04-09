@@ -5,8 +5,8 @@ class Route
     @stations = [start_station, end_station]
   end
 
-  def display
-    stations.each { |station| puts station.name }
+  def show
+    stations.map(&:name)
   end
 
   def add_station(station)
@@ -26,7 +26,7 @@ class Route
   end
 
   def previous_station(station)
-    return "#{station.name} is the first station of the route" if station == stations[0]
+    return puts "#{station.name} is the first station of the route" if station == stations[0]
     stations[stations.index(station) - 1]
   end
 end

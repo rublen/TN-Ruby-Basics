@@ -1,8 +1,10 @@
 require_relative 'train'
-require_relative 'passtrain_cargotrain_carriages'
+require_relative 'passenger_train'
+require_relative 'cargo_train'
+require_relative 'passenger_carriage'
+require_relative 'cargo_carriage'
 require_relative 'route'
 require_relative 'station'
-require_relative 'optional_methods'
 require_relative 'rail_road'
 
 rr = RailRoad.new
@@ -11,8 +13,9 @@ puts "Welcome to Railway Control System!
 You're alowed to work with trains, routes and stations
 \n___MENU___
   1 - creating items
-  2 - managing
-  3 - info about items
+  2 - managing routes
+  3 - managing trains
+  4 - info about items
   0 - exit\n"
 
 loop do
@@ -32,46 +35,44 @@ loop do
     loop do
       print "\nEnter a CREATING option: "
       option = gets.to_i
-      p creating(option, rr)
+      p rr.creating(option)
       break if option.zero?
     end
 
   when 2
-    puts "\n___MANAGING MENU___
-    1 - add station to the route
+    puts "\n___MANAGING ROUTES MENU___"
+    route = rr.get_route
+    puts "    1 - add station to the route
     2 - delete station from the route
-    3 - set the route for train
-    4 - add one carriage to the train
-    5 - remove one carriage from the train
-    6 - move the train to the next station
-    7 - move the train to the previous station
     0 - exit to the previous menu\n"
 
-    print "Number of train: "
-    number = gets.chomp
-    train = rr.trains.find { |t| t.number == number }
-    unless train
-      puts 'There is no such train in the list'
-      next
-    end
-    print "Number of a route in the list of routes (0, 1, 2, ...): "
-    n = gets.to_i
-    route = rr.routes[n]
-    unless route
-      puts "There is no route ##{n}"
-      next
-    end
-
     loop do
-      print "\nEnter a MANAGING option: "
+      print "\nEnter a MANAGING ROUTES option: "
       option = gets.to_i
-      p managing(option, train, route, rr)
+      p rr.route_managing(option, route)
       break if option.zero?
     end
 
   when 3
+    puts "\n___MANAGING TRAINS MENU___"
+    train = rr.get_train
+    puts "    1 - set the route for train
+    2 - add one carriage to the train
+    3 - remove one carriage from the train
+    4 - move the train to the next station
+    5 - move the train to the previous station
+    0 - exit to the previous menu\n"
+
+    loop do
+      print "\nEnter a MANAGING TRAINS option: "
+      option = gets.to_i
+      p rr.train_managing(option, train)
+      break if option.zero?
+    end
+
+  when 4
     puts "\n___INFO MENU___
-    1 - display the route
+    1 - show the route
     2 - list of trains on the station
     3 - list of all trains in the rail road
     0 - exit to the previous menu\n"
@@ -79,7 +80,7 @@ loop do
     loop do
       print "\nEnter a INFO option: "
       option = gets.to_i
-      p info(option, rr)
+      p rr.info(option)
       break if option.zero?
     end
   else
