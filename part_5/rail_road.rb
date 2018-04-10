@@ -134,6 +134,57 @@ class RailRoad
     route
   end
 
+  def start
+    loop do
+      puts MAIN_MENU
+      print "Enter a MENU option: "
+      menu_option = gets.to_i
+      case menu_option
+      when 1
+        puts CREATING_MENU
+        loop do
+          print "\nEnter a CREATING option: "
+          option = gets.to_i
+          p creating(option)
+          break if option.zero?
+        end
+
+      when 2
+        puts "\n___MANAGING ROUTES MENU___"
+        route = get_route
+        puts MANAGING_ROUTES_MENU
+        loop do
+          print "\nEnter a MANAGING ROUTES option: "
+          option = gets.to_i
+          p route_managing(option, route)
+          break if option.zero?
+        end
+
+      when 3
+        puts "\n___MANAGING TRAINS MENU___"
+        train = get_train
+        puts MANAGING_TRAINS_MENU
+        loop do
+          print "\nEnter a MANAGING TRAINS option: "
+          option = gets.to_i
+          p train_managing(option, train)
+          break if option.zero?
+        end
+
+      when 4
+        puts INFO_MENU
+        loop do
+          print "\nEnter a INFO option: "
+          option = gets.to_i
+          p info(option)
+          break if option.zero?
+        end
+      else
+        exit
+      end
+    end
+  end
+
   # эти методы вызываются только внутри класса RailRoad
   private
   def get_station
