@@ -1,8 +1,9 @@
 class Train
-  attr_reader :number, :current_speed, :carriages, :route, :current_station
+  attr_reader :number, :type, :current_speed, :carriages, :route, :current_station
 
   def initialize(number)
     @number = number.to_s
+    @type = 'cargo'
     @carriages = []
     @current_speed = 0
     @route = nil
@@ -21,6 +22,7 @@ class Train
   end
 
   def add_one_carriage(carriage)
+    return puts "Carriage type doesn't match train type" if carriage.type != type
     return puts "Stop the train before adding a carriage" unless current_speed.zero?
     @carriages << carriage
   end
