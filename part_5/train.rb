@@ -6,7 +6,7 @@ class Train
   include InstanceCounter
 
   attr_reader :number, :type, :current_speed, :carriages, :route, :current_station
-  @@all = []
+  @@all = {}
   set_counter
 
   def initialize(number)
@@ -15,7 +15,7 @@ class Train
     @carriages = []
     @current_speed = 0
     @route = nil
-    @@all << self
+    @@all[@number] = self
     register_instance
   end
 
@@ -74,7 +74,7 @@ class Train
   end
 
   def self.find(number)
-    @@all.find { |train| train.number == number.to_s }
+    @@all[number.to_s]
   end
 
   protected
