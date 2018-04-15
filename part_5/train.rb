@@ -1,5 +1,13 @@
+require_relative 'manufacturer'
+require_relative 'instance_counter'
+
 class Train
+  include Manufacturer
+  include InstanceCounter
+
   attr_reader :number, :type, :current_speed, :carriages, :route, :current_station
+  @@all = []
+  set_counter
 
   def initialize(number)
     @number = number.to_s
@@ -7,6 +15,8 @@ class Train
     @carriages = []
     @current_speed = 0
     @route = nil
+    @@all << self
+    register_instance
   end
 
   def speed_up_by(speed)
@@ -61,6 +71,10 @@ class Train
     current_station.send_off(self)
     self.current_station = previous_station
     current_station.take(self)
+  end
+
+  def self.find(number)
+    @@all.find { |train| train.number == number.to_s }
   end
 
   protected

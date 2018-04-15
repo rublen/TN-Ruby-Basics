@@ -1,9 +1,17 @@
+require_relative 'instance_counter'
+
 class Station
+  include InstanceCounter
+
   attr_reader :name, :trains
+  @@all = []
+  set_counter
 
   def initialize(name)
     @name = name
     @trains = []
+    @@all << self
+    register_instance
   end
 
   def trains_on_the_station
@@ -21,6 +29,10 @@ class Station
   # cargo or passanger
   def trains_by_type(type)
     get_numbers trains.select { |train| train.class == eval("#{type.capitalize}Train") }
+  end
+
+  def self.all
+    @@all
   end
 
   private
