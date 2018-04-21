@@ -36,7 +36,6 @@ class Station
   end
 
   private
-  # for DRYing code of some methods
   def get_numbers (list_of_trains)
     list_of_trains.map { |train| train.number }
   end

@@ -6,11 +6,14 @@ class Train
   include InstanceCounter
 
   attr_reader :number, :type, :current_speed, :carriages, :route, :current_station
+
+  NUMBER_FORMAT = /^[a-z0-9]{3}-?[a-z0-9]{2}$/i
   @@all = {}
   set_counter
 
-  def initialize(number)
-    @number = number.to_s
+ def initialize(number)
+    @number = valid?(number)
+    raise 'Rejected. Got ivalid object' unless @number
     @type = 'cargo'
     @carriages = []
     @current_speed = 0
@@ -32,13 +35,11 @@ class Train
   end
 
   def add_one_carriage(carriage)
-    return puts "Carriage type doesn't match train type" if carriage.type != type
     return puts "Stop the train before adding a carriage" unless current_speed.zero?
     @carriages << carriage
   end
 
   def remove_one_carriage
-    return puts "This train has no carriages" if carriages.empty?
     return puts "Stop the train before removing a carriage" unless current_speed.zero?
     @carriages.pop
   end
@@ -50,37 +51,51 @@ class Train
   end
 
   def next_station
-    return puts "Route hasn't set" unless route
+    return nil unless route
     route.next_station(current_station)
   end
 
   def previous_station
-    return puts "Route hasn't set" unless route
+    return nil unless route
     route.previous_station(current_station)
   end
 
   def move_to_next_station
-    return unless next_station
+    st = next_station
+    return unless st
     current_station.send_off(self)
-    self.current_station = next_station
-    current_station.take(self)
+    st.take(self)
+    self.current_station = st
   end
 
   def move_to_previous_station
-    return unless previous_station
+    st = previous_station
+    return unless st
     current_station.send_off(self)
-    self.current_station = previous_station
-    current_station.take(self)
+    st.take(self)
+    self.current_station = st
   end
 
   def self.find(number)
     @@all[number.to_s]
   end
 
+  def valid?(value)
+    validate(value)
+  rescue
+    false
+  end
+
   protected
-  # извне эти сеттер не должны быть недоступны,
-  # изменять скорость - только через методы увеличения/снижения скорости,
-  # изменять станцию - через методы move_to_next/previous_station
-  # дочерние классы должны иметь доступ к этим сеттерам
   attr_writer :current_speed, :current_station
+
+  def validate(value)
+    raise "Your value has invalid format, use one of patterns: XXX-XX or XXXXX" unless value =~ NUMBER_FORMAT
+    value
+  rescue RuntimeError => e
+    puts e
+    print "Try again. Enter another value: "
+    value = gets.chomp
+  retry
+  end
 end
