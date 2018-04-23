@@ -12,8 +12,8 @@ class Train
   set_counter
 
  def initialize(number)
-    @number = valid?(number)
-    raise 'Rejected. Got ivalid object' unless @number
+    @number = number
+    validate!
     @type = 'cargo'
     @carriages = []
     @current_speed = 0
@@ -76,12 +76,17 @@ class Train
     self.current_station = st
   end
 
-  def self.find(number)
-    @@all[number.to_s]
+  def self.all
+    @@all
   end
 
-  def valid?(value)
-    validate(value)
+  def self.find(number)
+    raise 'There is no such station in the list' unless all[number.to_s]
+    all[number.to_s]
+  end
+
+  def valid?
+    validate!
   rescue
     false
   end
@@ -89,13 +94,8 @@ class Train
   protected
   attr_writer :current_speed, :current_station
 
-  def validate(value)
-    raise "Your value has invalid format, use one of patterns: XXX-XX or XXXXX" unless value =~ NUMBER_FORMAT
-    value
-  rescue RuntimeError => e
-    puts e
-    print "Try again. Enter another value: "
-    value = gets.chomp
-  retry
+  def validate!
+    raise "FAILED! Your value has invalid format, use one of patterns: XXX-XX or XXXXX" unless @number =~ NUMBER_FORMAT
+    true
   end
 end

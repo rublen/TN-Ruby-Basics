@@ -1,4 +1,5 @@
 require_relative 'instance_counter'
+require_relative'station'
 
 class Route
   include InstanceCounter
@@ -8,6 +9,7 @@ class Route
 
   def initialize(start_station, end_station)
     @stations = [start_station, end_station]
+    validate!
     register_instance
   end
 
@@ -32,5 +34,17 @@ class Route
   def previous_station(station)
     return nil if station == stations[0]
     stations[stations.index(station) - 1]
+  end
+
+  def valid?
+    validate!
+  rescue
+    false
+  end
+
+  private
+  def validate!
+    raise "FAILED! The list of stations doesn't consist value" if @stations.include? nil
+    true
   end
 end

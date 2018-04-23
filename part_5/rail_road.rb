@@ -16,7 +16,7 @@ class RailRoad
   end
 
   def list_of_routes
-    routes.map.each_with_index { |r, i| "#{i + 1}. #{r.show} " }
+    routes.map.with_index(1) { |r, i| "#{i}. #{r.show} " }
   end
 
   def list_of_carriages_by_type(type)
@@ -86,16 +86,18 @@ class RailRoad
       puts '-- Create a Passenger Train --'
       print 'Enter the number of new train: '
       number = gets.chomp
-      raise if list_of_trains.include? number
-      trains << PassengerTrain.new(number)
-      "SUCCESS! Created a passenger train number #{number}"
+      t = handle_validation(PassengerTrain, number)
+      return if t == '0'
+      trains << t
+      "SUCCESS! Created a passenger train number #{t.number}"
     when 2
       puts '-- Create a Cargo Train --'
       print 'Enter the number of new train: '
       number = gets.chomp
-      raise if list_of_trains.include? number
-      trains << CargoTrain.new(number)
-      "SUCCESS! Created a cargo train number #{number}"
+      t = handle_validation(CargoTrain, number)
+      return if t == '0'
+      trains << t
+      "SUCCESS! Created a cargo train number #{t.number}"
     when 3
       puts "-- Create a Passenger Carriage --"
       carriages << PassengerCarriage.new
@@ -108,38 +110,39 @@ class RailRoad
       puts "-- Create a Station --"
       print 'Enter the name of new station: '
       name = gets.chomp
-      raise if list_of_stations.include? name
-      stations << Station.new(name)
-      "SUCCESS! Created a station #{name}"
+      s = handle_validation(Station, name)
+      return if s == '0'
+      stations << s
+      "SUCCESS! Created a station #{s.name}"
     when 6
       puts '-- Create a route with two stations --'
-      puts 'First station of the route'
-      st_1 = get_station
-      return unless st_1
-      puts 'Last station of the route'
-      st_2 = get_station
-      return unless st_2
-      routes << Route.new(st_1, st_2)
+      begin
+      print 'First station of the route: '
+      st_1 = handling_find_station(gets.chomp)
+      print 'Last station of the route: '
+      st_2 = handling_find_station(gets.chomp)
+      # begin
+        routes << Route.new(st_1, st_2)
+      rescue RuntimeError => e
+        return e
+      end
       "SUCCESS! Created a route #{routes.last.show}"
     end
-  rescue RuntimeError
-    puts 'FAILED! The list already consists such item'
-    return
   end
 
   def route_managing(option, route)
     case option
     when 1
       puts "-- Add Station to the Route --"
-      st = get_station
+      print 'Station to add: '
+      st = handling_find_station(gets.chomp)
       return puts 'FAILED! The route already consists this station' if route.stations.include? st
       route.add_station(st)
       "SUCCESS! Station #{st.name} was added to the route: #{route.show}"
     when 2
       puts "-- Delete Station from the Route --"
       print "Choose a station for deleting from the list #{route.stations[1...-1].map(&:name)}: "
-      name = gets.chomp
-      st = route.stations.find { |s| s.name == name}
+      st = handling_find_station(gets.chomp)
       return 'FAILED! There is no such station in this route' unless st
       route.delete_station(st)
       "SUCCESS! Station #{st.name} was deleted from the route: #{route.show}"
@@ -186,23 +189,41 @@ class RailRoad
       route.show if route
     when 2
       puts "-- Display the List of Trains on the Station --"
-      st = get_station
+      print 'Station: '
+      st = handling_find_station(gets.chomp)
       st.trains_on_the_station if st
     when 3
       puts "-- Display the List of All Trains --"
       return 'List of the trains is empty' if list_of_trains.empty?
       list_of_trains
+    when 4
+      puts "-- Display the List of All Stations --"
+      return 'List of the stations is empty' if list_of_stations.empty?
+      list_of_stations
     end
   end
 
-  def get_station
-    return puts 'List of stations is empty' if list_of_stations.empty?
-    print 'Name of station: '
-    name = get_valid_value(list_of_stations, gets.chomp)
-    stations.find { |s| s.name == name }
+  # helpers
+  def handling_find_station(name)
+    st = Station.find(name)
+  rescue RuntimeError => e
+    return e
+  ensure st
   end
 
-   def get_train
+  def handle_validation(klass, init_value)
+    raise 'FAILED! The list already consists this value' if klass.all.keys.include? init_value
+    new_obj = klass.new(init_value)
+  rescue RuntimeError => e
+    puts e
+    print "Try again or enter '0' for return. Enter the value: "
+    init_value = gets.chomp
+    return '0' if init_value == '0'
+    retry
+  ensure new_obj
+  end
+
+  def get_train
     return puts 'List of trains is empty' if list_of_trains.empty?
     print "Enter number of the required train: "
     number = get_valid_value(list_of_trains, gets.chomp)
@@ -210,6 +231,7 @@ class RailRoad
   end
 
   def get_route
+    raise 'FAILED! List of stations is empty' if Station.all.empty?
     return puts 'List of routes is empty' if list_of_routes.empty?
     p list_of_routes
     print "Choose the route by its number (1, 2, ...): "

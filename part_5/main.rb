@@ -34,6 +34,7 @@ INFO_MENU = "\n___INFO MENU___
     1 - show the route
     2 - list of trains on the station
     3 - list of all trains in the rail road
+    4 - list of all stations
     0 - exit to the previous menu\n"
 
 puts "\nWELCOME to Railway Control System!\n
