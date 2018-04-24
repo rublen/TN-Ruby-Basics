@@ -10,7 +10,7 @@ class Station
 
   def initialize(name)
     @name = name
-    validate!
+    init_validate!
     @trains = []
     @@all[@name] = self
     register_instance
@@ -38,7 +38,7 @@ class Station
   end
 
   def self.find(name)
-    raise 'There is no such station in the list' unless all[name]
+    raise 'FAILED! There is no such station in the list' unless all[name]
     all[name]
   end
 
@@ -54,7 +54,12 @@ class Station
   end
 
   def validate!
-    raise "FAILED! Your value has invalid format, use only letters and \"'\" or \"-\"" unless @name =~ NAME_FORMAT
+    raise "FAILED! Your value has invalid format, use only letters and ' or -" unless @name =~ NAME_FORMAT
     true
+  end
+
+  def init_validate!
+    raise 'FAILED! The list already consists this name' if Station.all.keys.include? @name
+    validate!
   end
 end

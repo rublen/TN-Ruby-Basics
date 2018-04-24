@@ -27,12 +27,12 @@ class Route
   end
 
   def next_station(station)
-    return nil if station == stations[-1]
+    return if station == stations[-1]
     stations[stations.index(station) + 1]
   end
 
   def previous_station(station)
-    return nil if station == stations[0]
+    return if station == stations[0]
     stations[stations.index(station) - 1]
   end
 
@@ -44,7 +44,7 @@ class Route
 
   private
   def validate!
-    raise "FAILED! The list of stations doesn't consist value" if @stations.include? nil
+    raise "FAILED! The list of stations doesn't consist the station" unless @stations.all? { |s| s.is_a? Station }
     true
   end
 end

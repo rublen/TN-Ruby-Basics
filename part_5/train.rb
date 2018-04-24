@@ -12,8 +12,8 @@ class Train
   set_counter
 
  def initialize(number)
-    @number = number
-    validate!
+    @number = number.to_s
+    init_validate!
     @type = 'cargo'
     @carriages = []
     @current_speed = 0
@@ -81,7 +81,7 @@ class Train
   end
 
   def self.find(number)
-    raise 'There is no such station in the list' unless all[number.to_s]
+    raise 'FAILED! There is no such station in the list' unless all[number.to_s]
     all[number.to_s]
   end
 
@@ -97,5 +97,10 @@ class Train
   def validate!
     raise "FAILED! Your value has invalid format, use one of patterns: XXX-XX or XXXXX" unless @number =~ NUMBER_FORMAT
     true
+  end
+
+  def init_validate!
+    raise 'FAILED! The list already consists this number' if Train.all.keys.include? @number
+    validate!
   end
 end
