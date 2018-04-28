@@ -1,16 +1,18 @@
 require_relative 'instance_counter'
 
 class Station
+  NAME_FORMAT = /^[a-zа-я]+'?-?[a-zа-я]+$/i
   include InstanceCounter
 
   attr_reader :name, :trains
-  @@all = []
+  @@all = {}
   set_counter
 
   def initialize(name)
     @name = name
+    init_validate!
     @trains = []
-    @@all << self
+    @@all[@name] = self
     register_instance
   end
 
@@ -35,9 +37,29 @@ class Station
     @@all
   end
 
+  def self.find(name)
+    raise 'FAILED! There is no such station in the list' unless all[name]
+    all[name]
+  end
+
+  def valid?
+    validate!
+  rescue
+    false
+  end
+
   private
-  # for DRYing code of some methods
   def get_numbers (list_of_trains)
     list_of_trains.map { |train| train.number }
+  end
+
+  def validate!
+    raise "FAILED! Your value has invalid format, use only letters and ' or -" unless @name =~ NAME_FORMAT
+    true
+  end
+
+  def init_validate!
+    raise 'FAILED! The list already consists this name' if Station.all.keys.include? @name
+    validate!
   end
 end

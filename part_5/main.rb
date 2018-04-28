@@ -13,7 +13,7 @@ MAIN_MENU = "\n___MAIN MENU___
   3 - managing trains
   4 - info about items
   0 - exit\n"
-CREATING_MENU = "\n___CREATING MENU___:
+CREATING_MENU = "\n___CREATING MENU___
     1 - create a passenger train, required attribute - number of train
     2 - create a cargo train, required attribute - number of train
     3 - create a passenger carriage
@@ -34,9 +34,10 @@ INFO_MENU = "\n___INFO MENU___
     1 - show the route
     2 - list of trains on the station
     3 - list of all trains in the rail road
+    4 - list of all stations
     0 - exit to the previous menu\n"
 
-puts "Welcome to Railway Control System!
+puts "\nWELCOME to Railway Control System!\n
 You're alowed to work with trains, routes and stations"
 
 rr = RailRoad.new

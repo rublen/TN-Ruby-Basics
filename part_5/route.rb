@@ -1,4 +1,5 @@
 require_relative 'instance_counter'
+require_relative'station'
 
 class Route
   include InstanceCounter
@@ -8,11 +9,12 @@ class Route
 
   def initialize(start_station, end_station)
     @stations = [start_station, end_station]
+    validate!
     register_instance
   end
 
   def show
-    stations.map(&:name)
+    stations.map(&:name).join('-')
   end
 
   def add_station(station)
@@ -20,19 +22,29 @@ class Route
   end
 
   def delete_station(station)
-    return puts 'There is no such station in this route' unless stations.include? station
     return puts "You can't delete end stations" if [stations[0], stations[-1]].include? station
     @stations.delete(station)
-    stations
   end
 
   def next_station(station)
-    return puts "#{station.name} is the last station of the route" if station == stations[-1]
+    return if station == stations[-1]
     stations[stations.index(station) + 1]
   end
 
   def previous_station(station)
-    return puts "#{station.name} is the first station of the route" if station == stations[0]
+    return if station == stations[0]
     stations[stations.index(station) - 1]
+  end
+
+  def valid?
+    validate!
+  rescue
+    false
+  end
+
+  private
+  def validate!
+    raise "FAILED! The list of stations doesn't consist the station" unless @stations.all? { |s| s.is_a? Station }
+    true
   end
 end
