@@ -13,11 +13,11 @@ class Train
 
  def initialize(number)
     @number = number.to_s
-    init_validate!
     @type = 'cargo'
     @carriages = []
     @current_speed = 0
     @route = nil
+    init_validate!
     @@all[@number] = self
     register_instance
   end
