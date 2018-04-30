@@ -76,6 +76,17 @@ class Train
     self.current_station = st
   end
 
+  def valid?
+    validate!
+  rescue
+    false
+  end
+
+  def each_carriage
+    return carriages.to_enum(:each) unless block_given?
+    carriages.each { |car| yield car }
+  end
+
   def self.all
     @@all
   end
@@ -83,12 +94,6 @@ class Train
   def self.find(number)
     raise 'FAILED! There is no such station in the list' unless all[number.to_s]
     all[number.to_s]
-  end
-
-  def valid?
-    validate!
-  rescue
-    false
   end
 
   protected

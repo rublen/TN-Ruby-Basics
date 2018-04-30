@@ -21,7 +21,7 @@ class Station
   end
 
   def take(train)
-    @trains << train until trains.include? train
+    @trains << train unless trains.include? train
   end
 
   def send_off(train)
@@ -33,6 +33,17 @@ class Station
     get_numbers trains.select { |train| train.class == eval("#{type.capitalize}Train") }
   end
 
+  def valid?
+    validate!
+  rescue
+    false
+  end
+
+  def each_train
+    return trains.to_enum(:each) unless block_given?
+    trains.each { |train| yield train }
+  end
+
   def self.all
     @@all
   end
@@ -40,12 +51,6 @@ class Station
   def self.find(name)
     raise 'FAILED! There is no such station in the list' unless all[name]
     all[name]
-  end
-
-  def valid?
-    validate!
-  rescue
-    false
   end
 
   private

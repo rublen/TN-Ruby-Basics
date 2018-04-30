@@ -69,7 +69,7 @@ class RailRoad
         loop do
           print "\nEnter a INFO option: "
           option = gets.to_i
-          p info(option)
+          info(option)
           break if option.zero?
         end
       else
@@ -86,7 +86,7 @@ class RailRoad
       puts '-- Create a Passenger Train --'
       print 'Enter the number of new train: '
       number = gets.chomp
-      t = handle_validation(PassengerTrain, number)
+      t = handle_init_validation(PassengerTrain, number)
       return if t == '0'
       trains << t
       "SUCCESS! Created a passenger train number #{t.number}"
@@ -94,23 +94,25 @@ class RailRoad
       puts '-- Create a Cargo Train --'
       print 'Enter the number of new train: '
       number = gets.chomp
-      t = handle_validation(CargoTrain, number)
+      t = handle_init_validation(CargoTrain, number)
       return if t == '0'
       trains << t
       "SUCCESS! Created a cargo train number #{t.number}"
     when 3
       puts "-- Create a Passenger Carriage --"
-      carriages << PassengerCarriage.new
-      "SUCCESS! Created a passenger carriage"
+      car = create_carriage(PassengerCarriage)
+      return unless car
+      "SUCCESS! Created a passenger carriage with #{car.space} seats"
     when 4
       puts "-- Create a Cargo Carriage --"
-      carriages << CargoCarriage.new
-      "SUCCESS! Created a cargo carriage"
+      car = create_carriage(CargoCarriage)
+      return unless car
+      "SUCCESS! Created a cargo carriage with volume of #{car.space}"
     when 5
       puts "-- Create a Station --"
       print 'Enter the name of new station: '
       name = gets.chomp
-      s = handle_validation(Station, name)
+      s = handle_init_validation(Station, name)
       return if s == '0'
       stations << s
       "SUCCESS! Created a station #{s.name}"
@@ -152,7 +154,7 @@ class RailRoad
     when 1
       puts "-- Set the Route for Train --"
       route = get_route
-      return unless route.is_a? Route
+      return route unless route.is_a? Route
       train.route = route
       "SUCCESS! Train number #{train.number} got the route: #{route.show}"
     when 2
@@ -177,6 +179,24 @@ class RailRoad
       return "FAILED! This train has no any route. First set the route" unless train.route
       return "FAILED! Current station #{train.current_station.name} is the first station of the route" unless train.move_to_previous_station
       "SUCCESS! Current station: #{train.current_station.name}"
+    when 6
+      puts "-- Take Seats/Volume in the Carriage --"
+      print "This train has #{train.carriages.size} carriages. Enter number of required carriage: "
+      n = gets.to_i
+      return "FAILED! Invalid number" if n <= 0 || n > train.carriages.size
+      begin
+        car = train.carriages[n-1]
+        puts "This carriage has free #{car.available} seats/volume"
+        if car.is_a?(PassengerCarriage)
+          car.take_place
+          return "SUCCESS! Now #{car.available} free seats left in this carriage"
+        end
+        print "Enter requier volume: "
+        car.take_place(gets.to_f)
+        return "SUCCESS! Now #{car.available} of volume left in this carriage"
+      rescue RuntimeError => e
+        return e.message
+      end
     end
   end
 
@@ -185,26 +205,38 @@ class RailRoad
     when 1
       puts "-- Display the Route --"
       route = get_route
-      route.show if route
+      puts route.show if route
     when 2
-      puts "-- Display the List of Trains on the Station --"
+      puts "-- Display Detailed List of Trains on the Station --"
       print 'Station: '
       st = handling_find_station(gets.chomp)
       return st unless st.is_a? Station
-      st.trains_on_the_station
+      st.each_train do |t|
+        puts "#{t.number}, #{t.type}, number of carriages: #{t.carriages.size}"
+        t.each_carriage.with_index(1) do |car, i|
+          puts "  Carriage ##{i}. #{car.type.capitalize}. Available: #{car.available}. Taken: #{car.taken}"
+        end
+      end
     when 3
       puts "-- Display the List of All Trains --"
-      return 'List of the trains is empty' if list_of_trains.empty?
-      list_of_trains
+      return puts 'List of the trains is empty' if list_of_trains.empty?
+      p list_of_trains
     when 4
       puts "-- Display the List of All Stations --"
-      return 'List of the stations is empty' if list_of_stations.empty?
-      list_of_stations
+      return puts 'List of the stations is empty' if list_of_stations.empty?
+      p list_of_stations
+    when 5
+      puts "-- Display Details about Train --"
+      t = get_train
+      return if t == '0'
+      t.each_carriage.with_index(1) do |car, i|
+        puts "  Carriage ##{i}. #{car.type.capitalize}. Available: #{car.available}. Taken: #{car.taken}"
+      end
     end
   end
 
   # helpers
-  def handle_validation(klass, init_value)
+  def handle_init_validation(klass, init_value)
     new_obj = klass.new(init_value)
   rescue RuntimeError => e
     puts e.message
@@ -213,6 +245,19 @@ class RailRoad
     return '0' if init_value == '0'
     retry
   ensure new_obj
+  end
+
+  def create_carriage(klass_car)
+    print "Enter amount of seats/volume (int/float, >= 0): "
+    space = gets.chomp
+    if space == '0'
+      car = klass_car.new
+    else
+      car = handle_init_validation(klass_car, space)
+      return if car == '0'
+    end
+    carriages << car
+    car
   end
 
   def handling_find_station(name)
