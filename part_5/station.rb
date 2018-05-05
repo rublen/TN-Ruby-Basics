@@ -30,12 +30,12 @@ class Station
 
   # cargo or passanger
   def trains_by_type(type)
-    get_numbers trains.select { |train| train.class == eval("#{type.capitalize}Train") }
+    get_numbers(trains.select { |t| t.class == eval("#{type.capitalize}Train") })
   end
 
   def valid?
     validate!
-  rescue
+  rescue StandardError
     false
   end
 
@@ -54,17 +54,22 @@ class Station
   end
 
   private
-  def get_numbers (list_of_trains)
-    list_of_trains.map { |train| train.number }
+
+  def get_numbers(list_of_trains)
+    list_of_trains.map(&:number)
   end
 
   def validate!
-    raise "FAILED! Your value has invalid format, use only letters and ' or -" unless @name =~ NAME_FORMAT
+    unless @name =~ NAME_FORMAT
+      raise "FAILED! Your value has invalid format, use only letters and ' or -"
+    end
     true
   end
 
   def init_validate!
-    raise 'FAILED! The list already consists this name' if Station.all.keys.include? @name
+    if Station.all.keys.include? @name
+      raise 'FAILED! The list already consists this name'
+    end
     validate!
   end
 end

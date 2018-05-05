@@ -1,5 +1,5 @@
 require_relative 'instance_counter'
-require_relative'station'
+require_relative 'station'
 
 class Route
   include InstanceCounter
@@ -22,7 +22,9 @@ class Route
   end
 
   def delete_station(station)
-    return puts "You can't delete end stations" if [stations[0], stations[-1]].include? station
+    if [stations[0], stations[-1]].include? station
+      return puts "You can't delete end stations"
+    end
     @stations.delete(station)
   end
 
@@ -38,13 +40,16 @@ class Route
 
   def valid?
     validate!
-  rescue
+  rescue StandardError
     false
   end
 
   private
+
   def validate!
-    raise "FAILED! The list of stations doesn't consist the station" unless @stations.all? { |s| s.is_a? Station }
+    unless @stations.all? { |s| s.is_a? Station }
+      raise "FAILED! The list of stations doesn't consist the station"
+    end
     true
   end
 end
