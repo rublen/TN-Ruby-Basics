@@ -5,12 +5,12 @@ Metrics/LineLength:
   Max: 82
 
 Metrics:
-  Exclude: 
-    - rail_road.rb
+  Exclude:
+    - 'part_5/rail_road.rb'
 
 Style/Documentation:
   Enabled: false
 
-Naming/AccessorMethodName: 
+Naming/AccessorMethodName:
   Enabled: false
 

@@ -275,7 +275,7 @@ class RailRoad
   end
 
   def get_route
-    return puts 'List of routes is empty' if list_of_routes.empty?
+    return puts 'List of the routes is empty' if list_of_routes.empty?
     p list_of_routes
     print 'Choose the route by its number (1, 2, ...): '
     n = gets.to_i
