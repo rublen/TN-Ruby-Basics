@@ -1,8 +1,10 @@
+# registration of inctances
 module InstanceCounter
   def self.included(base)
     base.extend ClassMethods
   end
 
+  # methods for extending
   module ClassMethods
     def set_counter
       class_variable_set(:@@counter, 0)
@@ -17,9 +19,8 @@ module InstanceCounter
     end
   end
 
-  # protected, потому что этот метод также будет вызываться при создании инстансов дочерних классов
-  # хотя он нигде не вызывается явно на объекте, наверное, можно было бы и private
   protected
+
   def register_instance
     self.class.increase
   end

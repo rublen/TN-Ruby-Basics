@@ -20,23 +20,28 @@ class Carriage
     counter
   end
 
-  def take_place(value = 1) # 1 - for passenger carriage
+  def take_place(value = 1)
+    # 1 - for passenger carriage
     raise 'FAILED! There is no free seats/volume' if available < value
     self.counter += value
   end
 
   def valid?
     validate!
-  rescue
+  rescue StandardError
     false
   end
 
   protected
+
   attr_accessor :counter
 
   private
+
   def validate!
-    raise 'FAILED! The spaciousness in the carriage should be a number greater than 0' unless space > 0
+    unless space > 0
+      raise 'FAILED! The spaciousness in the carriage should be a number > 0'
+    end
     true
   end
 end

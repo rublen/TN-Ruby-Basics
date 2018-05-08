@@ -11,9 +11,9 @@ class Train
   @@all = {}
   set_counter
 
- def initialize(number)
+  def initialize(number)
     @number = number.to_s
-    @type = 'cargo'
+    @type = nil
     @carriages = []
     @current_speed = 0
     @route = nil
@@ -35,12 +35,12 @@ class Train
   end
 
   def add_one_carriage(carriage)
-    return puts "Stop the train before adding a carriage" unless current_speed.zero?
+    return puts 'Stop train before adding a carriage' unless current_speed.zero?
     @carriages << carriage
   end
 
   def remove_one_carriage
-    return puts "Stop the train before removing a carriage" unless current_speed.zero?
+    return puts 'Stop train before removing carriage' unless current_speed.zero?
     @carriages.pop
   end
 
@@ -78,7 +78,7 @@ class Train
 
   def valid?
     validate!
-  rescue
+  rescue StandardError
     false
   end
 
@@ -97,15 +97,20 @@ class Train
   end
 
   protected
+
   attr_writer :current_speed, :current_station
 
   def validate!
-    raise "FAILED! Your value has invalid format, use one of patterns: XXX-XX or XXXXX" unless @number =~ NUMBER_FORMAT
+    unless @number =~ NUMBER_FORMAT
+      raise 'FAILED! Invalid format, use one of patterns: XXX-XX or XXXXX'
+    end
     true
   end
 
   def init_validate!
-    raise 'FAILED! The list already consists this number' if Train.all.keys.include? @number
+    if Train.all.keys.include? @number
+      raise 'FAILED! The list already consists this number'
+    end
     validate!
   end
 end
