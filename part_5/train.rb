@@ -1,9 +1,11 @@
 require_relative 'manufacturer'
 require_relative 'instance_counter'
+require_relative 'accessors'
 
 class Train
   include Manufacturer
   include InstanceCounter
+  extend Accessors
 
   attr_reader :number, :type, :current_speed, :carriages, :route, :current_station
 
