@@ -1,6 +1,9 @@
+require_relative 'validation'
+
 module Accessors
   def attr_accessor_with_history(*args)
     args.each do |inst_var|
+      raise ArgumentError unless inst_var.is_a? Symbol
       var_name = "@#{inst_var}".to_sym
       define_method(inst_var) { instance_variable_get(var_name) }
       define_method((inst_var.to_s + '=').to_sym) do |new_val|
@@ -15,28 +18,25 @@ module Accessors
   end
 
   def strong_attr_accessor(inst_var, klass)
-
-    klass.define_method((inst_var.to_s + '=').to_sym) do |new_val|
-      puts "in strong_attr_accessor: #{self}"
-      # raise "FAILED! Invalid value" unless valid?
-      instance_variable_set("@#{inst_var}".to_sym, new_val) if valid?
-    # rescue RuntimeError => e
-    #   puts e.message
-    end
-    klass.define_method(inst_var) { instance_variable_get("@#{inst_var}".to_sym) }
+    raise ArgumentError unless inst_var.is_a? Symbol
+    # if validate inst_var, presence: true, type: klass
+      define_method((inst_var.to_s + '=').to_sym) do |new_val|
+        instance_variable_set("@#{inst_var}".to_sym, new_val)
+      end
+    # end
+    define_method(inst_var) { instance_variable_get("@#{inst_var}".to_sym) }
   end
 end
 
 class A
   extend Accessors
+  include Validation
+  extend ClassMethods
+  strong_attr_accessor :bb, Integer
+  validate :bb, presence: true, type: Integer
 end
 
-class B;
-  def valid?
-    raise unless qq.is_a? Integer
-  rescue RuntimeError
-    false
-  end
+class B
 end
 
 A.attr_accessor_with_history :x, :y
@@ -53,16 +53,18 @@ a.y = 21
 a.y = 31
 p a.y
 p a.y_history
+p '------'
+# bb = B.new
+# A.strong_attr_accessor(:bb, B)
+# b = B.new
+a.bb = 100
+p a.bb
 
-A.strong_attr_accessor(:qq, B)
-b = B.new
-b.qq = 100
-p b.qq
-B.define_method(:ww=) { |v| instance_variable_set(:@ww, v) }
-B.define_method(:ww) { instance_variable_get(:@ww) }
-b.ww = 22
-p b.ww
-b1 = B.new
-p b.instance_variables
-p b1.instance_variables
 
+a1 = A.new
+p a.instance_variables
+a1.bb = 222
+p a1.bb
+a1.x = 'lol'
+p a1.x
+p a1.instance_variables

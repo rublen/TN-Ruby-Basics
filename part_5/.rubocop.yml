@@ -1,0 +1,16 @@
+AllCops:
+  DisplayCopNames: true
+
+Metrics/LineLength:
+  Max: 82
+
+Metrics:
+  Exclude:
+    - 'rail_road.rb'
+
+Style/Documentation:
+  Enabled: false
+
+Naming/AccessorMethodName:
+  Enabled: false
+
