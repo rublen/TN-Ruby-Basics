@@ -7,10 +7,10 @@ module Accessors
       var_name = "@#{inst_var}".to_sym
       define_method(inst_var) { instance_variable_get(var_name) }
       define_method((inst_var.to_s + '=').to_sym) do |new_val|
-        instance_variable_set(var_name, new_val)
         history_var = "@#{inst_var}_history".to_sym
         history_var_value = instance_variable_get(history_var)
-        history_var_value ||= []
+        history_var_value ||= Array(instance_variable_get(var_name))
+        instance_variable_set(var_name, new_val)
         instance_variable_set(history_var, history_var_value << instance_variable_get(var_name))
       end
       define_method((inst_var.to_s + '_history').to_sym) { instance_variable_get "@#{inst_var}_history".to_sym }
@@ -32,16 +32,35 @@ class A
   extend Accessors
   include Validation
   extend ClassMethods
-  strong_attr_accessor :bb, Integer
-  validate :bb, presence: true, type: Integer
+
+  # strong_attr_accessor :bb, Integer
+  attr_accessor_with_history :x, :y
+  validate :x, presence: true, type: Integer
+
+
+  def initialize(x, y)
+    puts @@validated_attrs
+    puts "init"
+    @x = "llk"
+    @y = y
+
+    validate!
+  end
+
+  def v_attr
+    @@validated_attrs
+  end
 end
 
 class B
 end
 
-A.attr_accessor_with_history :x, :y
+# A.attr_accessor_with_history :x, :y
 
-a = A.new
+a = A.new(7, 5)
+p a.v_attr
+p A.ancestors
+
 a.x = 1
 a.x = 2
 a.x = 3
