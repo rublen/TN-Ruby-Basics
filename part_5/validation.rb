@@ -1,49 +1,45 @@
 module Validation
+  def self.included(base)
+    base.class_variable_set(:@@validated_attrs, nil)
+    base.extend(ClassMethods)
+  end
+
   module ClassMethods
-    # validate attr, presense: true, format: /A-Z/, type: String
     def validate(attr, validations)
-      p "in validate"
+    # validate attr, presense: true, format: /A-Z/, type: String
       validated_attrs ||= {}
       validated_attrs[attr] = validations
       class_variable_set(:@@validated_attrs, validated_attrs)
-      p class_variable_get :@@validated_attrs
-      p "in validate"
     end
     def new(*args)
       super
-    rescue ArgumentError => e
-      puts "#{e.message} of validation in class #{self}"
+    rescue RuntimeError => e
+      puts "#{e.message} in class #{self}"
     end
   end
-
-  def method_missing(name, *args)
-    if name == :validate!
-      self.class.send(:define_method, :validate!, lambda do |args|
-        args.each do |attr, validations|
-          validations.each do |valid_type, valid_param|
-            raise ArgumentError unless valid_type.is_a? Symbol
-            p "Presence: #{presence(attr, true)}"
-            raise "#{valid_type.capitalize}ValitationError" unless self.send(valid_type, attr, valid_param)
-          end
-        end
-      end)
-      validate!(self.class.class_variable_get :@@validated_attrs)
-    end
-    super
-  end
-
-  #some method with method_missing - ???
 
   def presence(attr, truthness)
+    attr = eval(attr.to_s)
     !!(attr && attr != '') == truthness
   end
 
   def format(attr, pattern)
-    attr === pattern
+    eval(attr.to_s).to_s =~ pattern
   end
 
   def type(attr, klass)
-    attr.instance_of? klass
+    eval(attr.to_s).instance_of? klass
+  end
+
+  def validate!
+    validation_var = self.class.class_variable_get :@@validated_attrs
+    return unless validation_var
+    validation_var.each_pair do |attr, validations|
+      validations.each_pair do |valid_type, valid_param|
+        raise ArgumentError unless valid_type.is_a? Symbol
+        raise "#{valid_type.capitalize}ErrorOfValitation" unless self.send(valid_type, attr, valid_param)
+      end
+    end
   end
 
   def valid?
