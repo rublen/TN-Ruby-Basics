@@ -2,20 +2,21 @@ require_relative 'validation'
 
 module Accessors
   def attr_accessor_with_history(*args)
-  # для каждого атрибута из массива args создается геттер и сеттер, геттер - простой,
-  # а сеттер создает еще одну инстанс-переменную @имя_атрибута_history (напр., @name_history),
-  # эта переменная - массив, в который добавляются все значения атрибута; для этой переменной определяется метод-геттер
+    p args
+  # для каждого атрибута из массива args (напр., @x) создается геттер и сеттер, а также создается геттер
+  # для еще одной инстанс-переменной @имя_атрибута_history (напр., @x_history), при чем начальное значение
+  # этой переменной должно быть установлено как пустой массив, в который будут добавляться все новые значения атрибута @x через его сеттер
     args.each do |inst_var|
       raise ArgumentError unless inst_var.is_a? Symbol
       var_name = "@#{inst_var}".to_sym
-      define_method(inst_var) { instance_variable_get(var_name) }
+      var_name_history = "@#{inst_var}_history".to_sym
+      define_method(inst_var) { instance_variable_get var_name }
+      define_method("#{inst_var}_history".to_sym) { instance_variable_get var_name_history }
       define_method("#{inst_var}=".to_sym) do |new_val|
-        history_var = "@#{inst_var}_history".to_sym
-        history_var_value = Array(instance_variable_get(history_var))
+        instance_eval("#{var_name_history} ||= []")
         instance_variable_set(var_name, new_val)
-        instance_variable_set(history_var, history_var_value << instance_variable_get(var_name))
+        instance_variable_set(var_name_history, (eval(var_name_history.to_s) << new_val))
       end
-      define_method("#{inst_var}_history".to_sym) { instance_variable_get "@#{inst_var}_history".to_sym }
     end
   end
 
@@ -59,6 +60,8 @@ end
 # p a.x
 # p a.x_history
 # p '------'
+# p a.y
+# p a.y_history
 # a.y = 11
 # a.y = 21
 # a.y = 31
@@ -69,8 +72,9 @@ end
 
 # a1 = A.new(100, 200)
 # p a.instance_variables
-# a1.y = 222
+# a1.y= 222
 # p a1.y
-# a1.y = 2.5
+# a1.y= 2.5
 # p a1.y
 # p a1.instance_variables
+# p A.instance_variables
