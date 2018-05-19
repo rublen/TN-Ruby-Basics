@@ -6,7 +6,7 @@ module Validation
 
   module ClassMethods
     def validate(attr, validations)
-    # validate attr, presense: true, format: /A-Z/, type: String
+    # validate :number, presense: true, format: /A-Z/, type: String
       validated_attrs ||= {}
       validated_attrs[attr] = validations
       class_variable_set(:@@validated_attrs, validated_attrs)
@@ -37,7 +37,7 @@ module Validation
     validation_var.each_pair do |attr, validations|
       validations.each_pair do |valid_type, valid_param|
         raise ArgumentError unless valid_type.is_a? Symbol
-        raise "#{valid_type.capitalize}ErrorOfValitation" unless self.send(valid_type, attr, valid_param)
+        raise "#{valid_type.capitalize}ErrorOfValitation" unless send valid_type, attr, valid_param
       end
     end
   end

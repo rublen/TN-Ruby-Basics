@@ -11,8 +11,7 @@ module Accessors
       define_method(inst_var) { instance_variable_get(var_name) }
       define_method("#{inst_var}=".to_sym) do |new_val|
         history_var = "@#{inst_var}_history".to_sym
-        history_var_value = instance_variable_get(history_var)
-        history_var_value ||= Array(instance_variable_get(var_name))
+        history_var_value = Array(instance_variable_get(history_var))
         instance_variable_set(var_name, new_val)
         instance_variable_set(history_var, history_var_value << instance_variable_get(var_name))
       end
