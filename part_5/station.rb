@@ -8,9 +8,12 @@ class Station
   extend Accessors
   include Validation
 
-  attr_reader :name#, :trains
-  attr_accessor_with_history :trains
-  validate :name, presence: true, format: NAME_FORMAT
+  attr_reader :trains
+  strong_attr_accessor :name, String
+  validate :name, type: String, presence: true
+  validate :trains, type: Array
+
+  # validate :name, presence: true, format: NAME_FORMAT
   @@all = {}
   set_counter
 
@@ -39,12 +42,6 @@ class Station
     get_numbers(trains.select { |t| t.class == eval("#{type.capitalize}Train") })
   end
 
-  # def valid?
-  #   validate!
-  # rescue StandardError
-  #   false
-  # end
-
   def each_train
     return trains.to_enum(:each) unless block_given?
     trains.each { |train| yield train }
@@ -64,18 +61,4 @@ class Station
   def get_numbers(list_of_trains)
     list_of_trains.map(&:number)
   end
-
-  # def validate!
-  #   unless @name =~ NAME_FORMAT
-  #     raise "FAILED! Your value has invalid format, use only letters and ' or -"
-  #   end
-  #   true
-  # end
-
-  # def init_validate!
-  #   if Station.all.keys.include? @name
-  #     raise 'FAILED! The list already consists this name'
-  #   end
-  #   validate!
-  # end
 end

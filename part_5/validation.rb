@@ -6,10 +6,13 @@ module Validation
 
   module ClassMethods
     def validate(attr, validations)
-    # validate :number, presense: true, format: /A-Z/, type: String
+    # параметры медод validate: первый - имя инстанс-переменной, второй - хеш пар вида тип_валидации => параметр_валидации
+    # например, validate :number, presense: true, format: /A-Z/, type: String
+      validated_attrs = class_variable_get(:@@validated_attrs)
       validated_attrs ||= {}
       validated_attrs[attr] = validations
       class_variable_set(:@@validated_attrs, validated_attrs)
+      # создаем переменную класса @@validated_attrs - хеш, в который при каждом вызове метода validate добавляются пары вида attr => validations
     end
     def new(*args)
       super
@@ -36,8 +39,8 @@ module Validation
     return unless validation_var
     validation_var.each_pair do |attr, validations|
       validations.each_pair do |valid_type, valid_param|
-        raise ArgumentError unless valid_type.is_a? Symbol
-        raise "#{valid_type.capitalize}ErrorOfValitation" unless send valid_type, attr, valid_param
+        raise TypeError, "/**Symbol was expected" unless valid_type.is_a? Symbol
+        raise "/**#{valid_type.capitalize}ErrorOfValitation of @#{attr}" unless send valid_type, attr, valid_param
       end
     end
   end

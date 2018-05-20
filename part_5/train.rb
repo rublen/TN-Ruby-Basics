@@ -13,8 +13,8 @@ class Train
   NUMBER_FORMAT = /^[a-z0-9]{3}-?[a-z0-9]{2}$/i
 
   attr_reader :number, :type, :carriages, :route#, :current_station, :current_speed
-  attr_accessor_with_history :current_station
-  strong_attr_accessor :current_speed, Numeric
+  attr_accessor_with_history :current_station, :current_speed
+  # strong_attr_accessor :current_speed, Numeric
   validate :number, presence: true, format: NUMBER_FORMAT
 
   @@all = {}
@@ -26,6 +26,7 @@ class Train
     @carriages = []
     @current_speed = 0
     @route = nil
+    @current_station = nil
     validate!
     @@all[@number] = self
     register_instance
@@ -55,8 +56,8 @@ class Train
 
   def route=(route)
     @route = route
-    @current_station = @route.stations[0]
-    @current_station.take(self)
+    self.current_station = @route.stations[0]
+    current_station.take(self)
   end
 
   def next_station
@@ -85,12 +86,6 @@ class Train
     self.current_station = st
   end
 
-  # def valid?
-  #   validate!
-  # rescue StandardError
-  #   false
-  # end
-
   def each_carriage
     return carriages.to_enum(:each) unless block_given?
     carriages.each { |car| yield car }
@@ -104,22 +99,4 @@ class Train
     raise 'FAILED! There is no such station in the list' unless all[number.to_s]
     all[number.to_s]
   end
-
-  # protected
-
-  # attr_writer :current_station#, :current_speed
-
-#   def validate!
-#     unless @number =~ NUMBER_FORMAT
-#       raise 'FAILED! Invalid format, use one of patterns: XXX-XX or XXXXX'
-#     end
-#     true
-#   end
-
-#   def init_validate!
-#     if Train.all.keys.include? @number
-#       raise 'FAILED! The list already consists this number'
-#     end
-#     validate!
-#   end
 end
