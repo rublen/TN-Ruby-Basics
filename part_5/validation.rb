@@ -1,19 +1,16 @@
 module Validation
   def self.included(base)
-    base.class_variable_set(:@@validated_attrs, nil)
+    base.class_variable_set(:@@validated_attrs, [])
     base.extend(ClassMethods)
   end
 
   module ClassMethods
-    def validate(attr, validations)
-    # параметры медод validate: первый - имя инстанс-переменной, второй - хеш пар вида тип_валидации => параметр_валидации
-    # например, validate :number, presense: true, format: /A-Z/, type: String
+    def validate(attr, validation_type, validation_param = nil)
       validated_attrs = class_variable_get(:@@validated_attrs)
-      validated_attrs ||= {}
-      validated_attrs[attr] = validations
+      validated_attrs << { attr => [validation_type, validation_param] }
       class_variable_set(:@@validated_attrs, validated_attrs)
-      # создаем переменную класса @@validated_attrs - хеш, в который при каждом вызове метода validate добавляются пары вида attr => validations
     end
+
     def new(*args)
       super
     rescue RuntimeError => e
@@ -21,9 +18,9 @@ module Validation
     end
   end
 
-  def presence(attr, truthness)
+  def presence(attr, truthness = nil)
     attr = eval(attr.to_s)
-    !!(attr && attr != '') == truthness
+    attr && attr != ''
   end
 
   def format(attr, pattern)
@@ -37,10 +34,10 @@ module Validation
   def validate!
     validation_var = self.class.class_variable_get :@@validated_attrs
     return unless validation_var
-    validation_var.each_pair do |attr, validations|
-      validations.each_pair do |valid_type, valid_param|
-        raise TypeError, "/**Symbol was expected" unless valid_type.is_a? Symbol
-        raise "/**#{valid_type.capitalize}ErrorOfValitation of @#{attr}" unless send valid_type, attr, valid_param
+    validation_var.each do |item|
+      item.each_pair do |attr, validations|
+        raise TypeError, "/**Symbol was expected" unless validations[0].is_a? Symbol
+        raise "/**#{validations[0].capitalize}ErrorOfValitation of @#{attr}" unless send(validations[0], attr, validations[1])
       end
     end
   end

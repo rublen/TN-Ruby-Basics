@@ -20,15 +20,18 @@ r = Route.new(s1, s2)
 t1.route = r
 t1.move_to_next_station
 t1.move_to_previous_station
-p t1.current_station_history.map { |st| st.name }
+p t1.current_station_history.map(&:name)
 p '---------'
 
 puts "**Testing of strong_attr_accessor :name, String"
 # s1.name = 1111
 
 p '---------'
-puts "**Testing of validate :name, type: String, presence: true"
-s3 = Station.new(333)
+puts "**Testing of validate :name, :type, String"
+# s3 = Station.new(333)
+puts "**Testing of validate :name, :format, NAME_FORMAT"
+s3 = Station.new("123Asdf")
+
 
 
 

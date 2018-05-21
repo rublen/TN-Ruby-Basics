@@ -10,8 +10,10 @@ class Station
 
   attr_reader :trains
   strong_attr_accessor :name, String
-  validate :name, type: String, presence: true
-  validate :trains, type: Array
+  validate :name, :type, String
+  validate :name, :presence
+  validate :trains, :type, Array
+  validate :name, :format, NAME_FORMAT
 
   # validate :name, presence: true, format: NAME_FORMAT
   @@all = {}

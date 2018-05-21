@@ -12,10 +12,11 @@ class Train
 
   NUMBER_FORMAT = /^[a-z0-9]{3}-?[a-z0-9]{2}$/i
 
-  attr_reader :number, :type, :carriages, :route#, :current_station, :current_speed
+  attr_reader :number, :type, :carriages, :route #, :current_station, :current_speed
   attr_accessor_with_history :current_station, :current_speed
   # strong_attr_accessor :current_speed, Numeric
-  validate :number, presence: true, format: NUMBER_FORMAT
+  validate :number, :presence
+  validate :number, :format, NUMBER_FORMAT
 
   @@all = {}
   set_counter
