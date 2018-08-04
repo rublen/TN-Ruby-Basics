@@ -1,13 +1,23 @@
 require_relative 'manufacturer'
 require_relative 'instance_counter'
+require_relative 'accessors'
+require_relative 'validation'
+require_relative 'route'
 
 class Train
   include Manufacturer
   include InstanceCounter
-
-  attr_reader :number, :type, :current_speed, :carriages, :route, :current_station
+  extend Accessors
+  include Validation
 
   NUMBER_FORMAT = /^[a-z0-9]{3}-?[a-z0-9]{2}$/i
+
+  attr_reader :number, :type, :carriages, :route #, :current_station, :current_speed
+  attr_accessor_with_history :current_station, :current_speed
+  # strong_attr_accessor :current_speed, Numeric
+  validate :number, :presence
+  validate :number, :format, NUMBER_FORMAT
+
   @@all = {}
   set_counter
 
@@ -17,7 +27,8 @@ class Train
     @carriages = []
     @current_speed = 0
     @route = nil
-    init_validate!
+    @current_station = nil
+    validate!
     @@all[@number] = self
     register_instance
   end
@@ -46,8 +57,8 @@ class Train
 
   def route=(route)
     @route = route
-    @current_station = @route.stations[0]
-    @current_station.take(self)
+    self.current_station = @route.stations[0]
+    current_station.take(self)
   end
 
   def next_station
@@ -76,12 +87,6 @@ class Train
     self.current_station = st
   end
 
-  def valid?
-    validate!
-  rescue StandardError
-    false
-  end
-
   def each_carriage
     return carriages.to_enum(:each) unless block_given?
     carriages.each { |car| yield car }
@@ -94,23 +99,5 @@ class Train
   def self.find(number)
     raise 'FAILED! There is no such station in the list' unless all[number.to_s]
     all[number.to_s]
-  end
-
-  protected
-
-  attr_writer :current_speed, :current_station
-
-  def validate!
-    unless @number =~ NUMBER_FORMAT
-      raise 'FAILED! Invalid format, use one of patterns: XXX-XX or XXXXX'
-    end
-    true
-  end
-
-  def init_validate!
-    if Train.all.keys.include? @number
-      raise 'FAILED! The list already consists this number'
-    end
-    validate!
   end
 end
